@@ -1,0 +1,225 @@
+\chapter{Requirement Analysis}
+
+\section{Functional Requirements}
+
+Functional requirements define the core operations and capabilities of the \textbf{SafeSurf} system. These requirements describe how the system accepts input URLs, processes them using machine learning techniques, and provides phishing detection results. They ensure that the system performs accurate, real-time classification and meets user expectations.
+
+\subsection{Importance of Functional Requirements}
+
+Functional requirements act as the foundation of the \textbf{SafeSurf} system, guiding the design of the frontend, backend, and machine learning pipeline. They ensure that:
+
+\begin{itemize}
+\item The system performs accurate phishing detection
+\item The processing workflow is clearly defined
+\item The system meets real-time performance requirements
+\item Developers and testers clearly understand system behavior
+\end{itemize}
+
+\subsection{Characteristics of Functional Requirements}
+
+\begin{itemize}
+\item Define specific functionalities required for phishing detection
+\item Describe input (URL), processing (feature extraction and machine learning), and output (classification)
+\item Specify system rules such as threshold-based decision logic
+\item Focus on both user interaction and automated detection mechanisms
+\item Can be validated and verified using test cases
+\end{itemize}
+
+\subsection{Core Functional Requirements of SafeSurf}
+
+\subsubsection{User Interface \& Interaction}
+
+\begin{itemize}
+\item The system provides:
+\begin{itemize}
+    \item A React-based web application
+    \item A Chrome extension for real-time URL monitoring
+\end{itemize}
+\item Users can:
+\begin{itemize}
+    \item Enter a URL manually through the web interface
+    \item Automatically analyze URLs through the browser extension
+\end{itemize}
+\item The system displays results as --- \textbf{Safe} or \textbf{Phishing Risk}
+\item The UI is designed to be:
+\begin{itemize}
+    \item Simple and intuitive
+    \item  Responsive and user-friendly
+    \item Free from complex technical details (no raw probability display)
+\end{itemize}
+\end{itemize}
+
+
+\subsubsection{Machine Learning \& AI Functionality}
+
+\begin{itemize}
+\item The system uses a hybrid ensemble machine learning approach for phishing detection.
+\item Models used include:
+\begin{itemize}
+ \item Logistic Regression
+ \item Linear SVM
+ \item Random Forest
+ \item HistGradientBoosting
+ \item Calibrated XGBoost
+\end{itemize}
+\item Additionally, A separate NLP-based Logistic Regression model processes textual features.
+\item Hyperparameters are tuned using an incremental hyperparameter tuning approach.
+\end{itemize}
+
+
+
+\subsubsection{URL Processing \& Feature Extraction}
+\begin{itemize}
+\item The system accepts a URL as input.
+\item Performs preprocessing including:
+\begin{itemize}
+\item URL normalization (canonicalization)
+\item Removal of unnecessary characters
+\end{itemize}
+\item Feature extraction includes.
+\begin{itemize}
+\item Lexical features (URL structure, length, symbols)
+\item Network-based features (WHOIS, SSL, domain age)
+\item NLP features (Bag-of-Words representation)
+\end{itemize}
+\item Feature extraction is performed using Parallel and asynchronous processing.
+\end{itemize}
+
+
+\subsubsection{Security \& Validation}
+
+\begin{itemize}
+
+\item The system includes a DNS Guard Layer that:
+\begin{itemize}
+    \item Detects invalid or non-existent domains (NXDOMAIN)
+    \item Blocks such requests before ML processing
+\end{itemize}
+
+\item Input validation ensures:
+\begin{itemize}
+    \item Proper URL format
+    \item Handling of invalid or malformed inputs
+\end{itemize}
+
+\item Prevents unnecessary computation and improves system efficiency
+
+\end{itemize}
+
+
+\subsubsection{Real-Time Detection \& Response}
+
+\begin{itemize}
+
+\item The system processes requests in real time
+
+\item Uses a FastAPI backend for high-speed API handling
+
+\item Output includes:
+\begin{itemize}
+    \item Phishing classification result
+    \item Risk level (High / Medium / Safe)
+    \item JSON response for frontend and extension
+\end{itemize}
+
+\end{itemize}
+
+
+\subsubsection{Performance \& Scalability}
+
+\begin{itemize}
+
+\item Supports multiple concurrent users using:
+\begin{itemize}
+    \item Concurrency control mechanisms
+\end{itemize}
+
+\item Optimized for:
+\begin{itemize}
+    \item Low latency predictions
+    \item Efficient resource usage
+\end{itemize}
+
+\item Can be deployed on:
+\begin{itemize}
+    \item Cloud platforms (AWS, Google Cloud)
+\end{itemize}
+
+\end{itemize}
+
+
+\subsubsection{Reliability \& Maintainability}
+
+\begin{itemize}
+
+\item Ensures consistent and accurate predictions
+
+\item Modular architecture allows:
+\begin{itemize}
+    \item Easy updates to ML models
+    \item Extension of features
+    \item Backend improvements
+\end{itemize}
+
+\item Supports:
+\begin{itemize}
+    \item Testing and debugging
+    \item Version control using Git
+\end{itemize}
+
+\end{itemize}
+
+
+\subsubsection{System Features}
+
+\begin{itemize}
+
+\item \textbf{SafeSurf} is designed as an intelligent phishing detection system with the following features:
+
+\begin{itemize}
+    \item Real-time phishing detection using machine learning
+    \item Integration with Chrome extension and web interface
+    \item Ensemble-based classification for improved accuracy
+    \item DNS-based pre-filtering for faster processing
+    \item User-friendly output with clear security indicators
+    \item Scalable backend architecture
+\end{itemize}
+
+\end{itemize}
+
+
+\subsubsection{Software Requirements}
+
+\begin{itemize}
+
+\item \textbf{Frontend}
+\begin{itemize}
+    \item React.js -- Dynamic and responsive web interface
+    \item Chrome Extension -- Real-time browser-based detection
+\end{itemize}
+
+\item \textbf{Backend}
+\begin{itemize}
+    \item FastAPI (Python) -- API handling and ML integration
+\end{itemize}
+
+\item \textbf{Machine Learning}
+\begin{itemize}
+    \item Scikit-learn
+    \item XGBoost
+    \item NumPy, Pandas
+\end{itemize}
+
+\item \textbf{Development Tools}
+\begin{itemize}
+    \item Jupyter Notebook
+    \item VS Code / Terminal
+\end{itemize}
+
+\item \textbf{Deployment}
+\begin{itemize}
+    \item Docker -- Containerization for consistent deployment
+    \item Cloud Platforms (AWS / Google Cloud)
+\end{itemize}
+
+\end{itemize}
