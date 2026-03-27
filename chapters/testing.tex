@@ -1,0 +1,132 @@
+\chapter{Testing}
+
+\section{Introduction}
+
+Testing is a critical phase in the SafeSurf system to ensure the phishing detection model is accurate, reliable, and efficient. Because the system uses a hybrid machine learning approach, DNS-based filtering, and real-time API processing, we tested each component thoroughly.
+
+\noindent
+The testing phase focuses on:
+\begin{itemize}
+    \item Evaluating model performance.
+    \item Validating real-time detection capabilities.
+    \item Ensuring correct handling of edge cases.
+    \item Verifying system stability under varying network conditions.
+\end{itemize}
+
+\section{Dataset Analysis}
+
+\subsection*{Comparative Analysis of Datasets}
+\noindent
+During development, multiple URL datasets were analyzed, including:
+\begin{enumerate}
+    \item \textbf{PhishTank Dataset:} Contains real-world, active phishing URLs \cite{ref17}.
+    \item \textbf{PhiUSIIL Phishing URL Dataset:} A balanced, comprehensive dataset containing over 235,000 verified phishing and legitimate URLs \cite{ref2}.
+\end{enumerate}
+
+\subsection*{Final Decision}
+\noindent
+The system uses a combined dataset approach. Extracting exactly 111 features across a large, diverse dataset improves:
+\begin{itemize}
+    \item Model generalization.
+    \item Detection accuracy across new, unseen URLs.
+    \item Overall system stability.
+\end{itemize}
+\noindent
+Testing showed that smaller datasets resulted in over-fitting and poor detection of modern, complex phishing patterns.
+
+\section{Model Performance Observations}
+
+\subsection*{Key Findings During Testing}
+
+\begin{enumerate}
+    \item \textbf{Model Variability:}
+    Different machine learning models (like Logistic Regression vs. Random Forest) showed varying performance depending on the URL structure. The ensemble approach stabilized these differences.
+
+    \item \textbf{Feature Importance Extraction:}
+    During testing, specific features proved to be highly significant for classification accuracy. These included:
+    \begin{itemize}
+        \item Lexical lengths and the presence of special characters.
+        \item Domain age and WHOIS registration timing.
+        \item SSL certificate validation.
+    \end{itemize}
+
+    \item \textbf{Impact of Ensemble Learning:}
+    Single models occasionally produced false positives. Using the \textbf{VotingClassifier ensemble} (fused with an NLP model at a 65\% / 35\% weight split) helped:
+    \begin{itemize}
+        \item Reduce false positives.
+        \item Improve mathematical reliability.
+    \end{itemize}
+
+    \item \textbf{Effect of Real-World Data:}
+    Testing against live URLs revealed that attackers constantly change their URL patterns. This confirmed the need for continuous model retraining and drift monitoring.
+\end{enumerate}
+
+\section{Test Case Identification}
+
+\noindent
+The following execution scenarios validate system performance against real-world inputs:
+
+\begin{itemize}
+    \item \textbf{Test Case 1: Known Safe Website}
+    \begin{itemize}
+        \item \textbf{Input:} \texttt{https://www.google.com}
+        \item \textbf{Expected Output:} Legitimate / Safe ($< 0.65$ probability).
+        \item \textbf{Result:} Classified accurately.
+    \end{itemize}
+
+    \item \textbf{Test Case 2: Known Phishing Pattern}
+    \begin{itemize}
+        \item \textbf{Input:} \texttt{http://secure-login-alert.xyz}
+        \item \textbf{Expected Output:} Phishing / High Risk ($\geq 0.85$ probability).
+        \item \textbf{Result:} Classified accurately.
+    \end{itemize}
+
+    \item \textbf{Test Case 3: Suspicious Lexical Structure}
+    \begin{itemize}
+        \item \textbf{Input:} URL with excessive special characters and abnormal length.
+        \item \textbf{Expected Output:} Phishing / Medium Risk ($\geq 0.65$ probability).
+        \item \textbf{Result:} Classified accurately based on NLP text scoring.
+    \end{itemize}
+
+    \item \textbf{Test Case 4: Invalid Domain Execution}
+    \begin{itemize}
+        \item \textbf{Input:} \texttt{https://this-domain-does-not-exist-abc123.com}
+        \item \textbf{Expected Output:} Invalid input / Pre-filtered.
+        \item \textbf{Result:} DNS Guard successfully intercepted the request via NXDOMAIN detection.
+    \end{itemize}
+
+    \item \textbf{Test Case 5: Deceptive HTTPS Usage}
+    \begin{itemize}
+        \item \textbf{Input:} A phishing site utilizing a valid but recent SSL certificate.
+        \item \textbf{Expected Output:} Phishing.
+        \item \textbf{Result:} Infrastructure ensemble successfully flagged the recent WHOIS creation date despite the valid SSL.
+    \end{itemize}
+\end{itemize}
+
+\section{Impact of System Components on Stability}
+
+\begin{itemize}
+    \item \textbf{DNS Guard Layer:}
+    Instantly filters invalid or dead domains. This saves API resources and reduces unnecessary machine learning computation.
+
+    \item \textbf{Parallel Feature Extraction:}
+    Extracting 111 network features can be slow. Using \texttt{asyncio.gather} and strict 15-second timeouts prevented external query delays from freezing the API.
+
+    \item \textbf{Ensemble Model Behavior:}
+    Combining 5 distinct infrastructure algorithms with a separate NLP model drastically reduces the dependency on a single point of failure.
+
+    \item \textbf{Threshold-Based Decision Logic:}
+    Mapping raw probabilities into discrete bands (High/Medium/Low) helps developers maintain a strict balance between false positives and false negatives.
+\end{itemize}
+
+\section{Final Insights}
+\noindent
+Based on the completed test phases, the following conclusions were drawn:
+
+\begin{enumerate}
+    \item \textbf{Ensemble Models Improve Reliability:} Combining multiple models logically yields more stable and accurate predictions than any standalone script.
+    \item \textbf{Pre-Filtering Improves Efficiency:} The deterministic DNS Guard acts as a vital shield, protecting the ML pipeline from processing junk traffic.
+    \item \textbf{Feature Extraction is Critical:} The raw quality of the 111 extracted features directly dictates the eventual model performance.
+    \item \textbf{Real-World Testing is Essential:} Phishing strategies evolve rapidly, requiring a system built for zero-downtime hot-reloads and continuous updates.
+    \item \textbf{The System is Scalable:} The FastAPI backend effectively handles real-time concurrency controls (via Semaphores), preserving stability during heavy browser extension polling.
+\end{enumerate}
